@@ -1,17 +1,17 @@
 use std::iter::Flatten;
 
-pub struct DeepFlatten<I, T>
+pub struct DeepFlatten<I>
 where
-    I: Iterator<Item = T>,
+    I: Iterator,
 {
     iter: I,
 }
 
-impl<I, T> Iterator for DeepFlatten<I, T>
+impl<I> Iterator for DeepFlatten<I>
 where
-    I: Iterator<Item = T>,
+    I: Iterator,
 {
-    type Item = T;
+    type Item = I::Item;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.iter.next()
@@ -19,7 +19,7 @@ where
 }
 
 pub trait DeepFlattenExt: Iterator + Sized {
-    fn deep_flatten<D, T>(self) -> DeepFlatten<<Self as DeepFlattenIterator<D, T>>::Iter, T>
+    fn deep_flatten<D, T>(self) -> DeepFlatten<<Self as DeepFlattenIterator<D, T>>::Iter>
     where
         Self: DeepFlattenIterator<D, T>,
     {
