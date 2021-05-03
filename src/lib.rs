@@ -1,15 +1,15 @@
 use std::iter::Flatten;
 
-pub struct DeepFlatten<D, I, T>
+pub struct DeepFlatten<I, T>
 where
-    I: DeepFlattenIterator<D, T>,
+    I: Iterator<Item = T>,
 {
-    iter: I::Iter,
+    iter: I,
 }
 
-impl<D, I, T> Iterator for DeepFlatten<D, I, T>
+impl<I, T> Iterator for DeepFlatten<I, T>
 where
-    I: DeepFlattenIterator<D, T>,
+    I: Iterator<Item = T>,
 {
     type Item = T;
 
@@ -19,7 +19,7 @@ where
 }
 
 pub trait DeepFlattenExt: Iterator + Sized {
-    fn deep_flatten<D, T>(self) -> DeepFlatten<D, Self, T>
+    fn deep_flatten<D, T>(self) -> DeepFlatten<<Self as DeepFlattenIterator<D, T>>::Iter, T>
     where
         Self: DeepFlattenIterator<D, T>,
     {
@@ -70,7 +70,7 @@ mod tests {
         assert_eq!(
             vec![vec![1], vec![2, 3], vec![], vec![4, 5, 6]]
                 .into_iter()
-                .deep_flatten()
+                .deep_flatten::<((), ), usize>()
                 .collect::<Vec<usize>>(),
             vec![1, 2, 3, 4, 5, 6]
         );
